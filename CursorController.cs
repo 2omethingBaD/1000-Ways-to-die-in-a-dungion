@@ -17,7 +17,7 @@ public class CursorController : MonoBehaviour
 
     void Start()
     {
-        Cursor.visible = true;
+        //Cursor.visible = true;
         _cursorHotspot = new Vector2(_cursorDefault.width / 2, _cursorDefault.height / 2);
         Cursor.SetCursor(_cursorDefault, _cursorHotspot, CursorMode.Auto);
     }

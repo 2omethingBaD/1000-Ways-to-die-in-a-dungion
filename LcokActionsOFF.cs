@@ -8,13 +8,13 @@ namespace AC
 {
 
 	[System.Serializable]
-	public class LockActions : Action
+	public class LcokActionsOFF : Action
 	{
 
 		// Declare properties here
 		public override ActionCategory Category { get { return ActionCategory.Custom; } }
-		public override string Title { get { return "buttons controller"; } }
-		public override string Description { get { return "disable/enable buttons"; } }
+		public override string Title { get { return "turn off actions"; } }
+		public override string Description { get { return "disable buttons"; } }
 
 
 		// Declare variables here
@@ -31,22 +31,12 @@ namespace AC
 			TRIGGERS = MyUtils.FindIncludingInactive("TRIGGERS");
 			HOTSPOTS = MyUtils.FindIncludingInactive("HOTSPOTS");
 
-			if (BUTTONS.activeSelf || TRIGGERS.activeSelf || HOTSPOTS.activeSelf)
-			{
-				_cursorHotspot = new Vector2(_cursorDefault.width / 2, _cursorDefault.height / 2);
-				Cursor.SetCursor(_cursorDefault, _cursorHotspot, CursorMode.Auto);
-				BUTTONS.gameObject.SetActive(false);
-				TRIGGERS.gameObject.SetActive(false);
-				HOTSPOTS.gameObject.SetActive(false);
-				Debug.Log("mouse privlages gone!");
-			}
-            else
-            {
-				BUTTONS.gameObject.SetActive(true);
-				TRIGGERS.gameObject.SetActive(true);
-				HOTSPOTS.gameObject.SetActive(true);
-				Debug.Log("mouse time!");
-			}
+			_cursorHotspot = new Vector2(_cursorDefault.width / 2, _cursorDefault.height / 2);
+			Cursor.SetCursor(_cursorDefault, _cursorHotspot, CursorMode.Auto);
+			BUTTONS.gameObject.SetActive(false);
+			TRIGGERS.gameObject.SetActive(false);
+			HOTSPOTS.gameObject.SetActive(false);
+			Debug.Log("mouse privlages gone!");
 			return 0f;
 		}
 
