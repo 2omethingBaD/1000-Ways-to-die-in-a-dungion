@@ -1,10 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using AC;
+using static AC.InvVar;
+using static AC.InvCollection;
+using static AC.EventManager;
 
 public class CursorController : MonoBehaviour
 {
     [SerializeField] public Texture2D _cursorDefault;
+    [SerializeField] public Texture2D _cursorGrab;
     [SerializeField] public Texture2D _cursorSpeak;
     [SerializeField] public Texture2D _cursorQuestion;
     [SerializeField] public Texture2D _cursorUse;
@@ -13,6 +18,9 @@ public class CursorController : MonoBehaviour
     [SerializeField] public Texture2D _cursorSouth;
     [SerializeField] public Texture2D _cursorWest;
     private Vector2 _cursorHotspot;
+    public GameObject BUTTONS;
+    public int mousButton;
+    GVar _isTalking;
 
 
     void Start()
@@ -20,6 +28,8 @@ public class CursorController : MonoBehaviour
         //Cursor.visible = true;
         _cursorHotspot = new Vector2(_cursorDefault.width / 2, _cursorDefault.height / 2);
         Cursor.SetCursor(_cursorDefault, _cursorHotspot, CursorMode.Auto);
+        BUTTONS = MyUtils.FindIncludingInactive("BUTTONS");
+        _isTalking = AC.GlobalVariables.GetVariable(28);
     }
 
 
@@ -76,5 +86,59 @@ public class CursorController : MonoBehaviour
     {
         _cursorHotspot = new Vector2(_cursorDefault.width / 2, _cursorDefault.height / 2);
         Cursor.SetCursor(_cursorDefault, _cursorHotspot, CursorMode.Auto);
+    }
+
+
+    private void OnEnable()
+    {
+        EventManager.OnInventoryDeselect += OnInventoryDeselect;
+    }
+
+
+    private void OnDisable()
+    {
+        EventManager.OnInventoryDeselect -= OnInventoryDeselect;
+    }
+
+    
+    private void OnInventoryDeselect(InvItem invItem)
+    {
+        if (!_isTalking.BooleanValue)
+        {
+            BUTTONS.gameObject.SetActive(true);
+        }
+    }
+
+
+    private void Update()
+    {
+        if (KickStarter.runtimeInventory.hoverItem != null && mousButton != 1)
+        {
+            _cursorHotspot = new Vector2(_cursorUse.width / 2, _cursorUse.height / 2);
+            Cursor.SetCursor(_cursorUse, _cursorHotspot, CursorMode.Auto);
+            mousButton = 2;
+
+            if (KickStarter.runtimeInventory.SelectedItem != null)
+            {
+                _cursorHotspot = new Vector2(_cursorGrab.width / 2, _cursorGrab.height / 2);
+                Cursor.SetCursor(_cursorGrab, _cursorHotspot, CursorMode.Auto);
+                BUTTONS.gameObject.SetActive(false);
+                mousButton = 1;
+            }
+        }
+
+        if (KickStarter.runtimeInventory.SelectedItem == null && mousButton == 1)
+        {
+            mousButton = 0;
+            _cursorHotspot = new Vector2(_cursorDefault.width / 2, _cursorDefault.height / 2);
+            Cursor.SetCursor(_cursorDefault, _cursorHotspot, CursorMode.Auto);
+        }
+
+        if (KickStarter.runtimeInventory.hoverItem == null && mousButton == 2)
+        {
+            _cursorHotspot = new Vector2(_cursorDefault.width / 2, _cursorDefault.height / 2);
+            Cursor.SetCursor(_cursorDefault, _cursorHotspot, CursorMode.Auto);
+            mousButton = 3;
+        }
     }
 }

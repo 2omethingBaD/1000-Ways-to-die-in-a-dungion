@@ -7,10 +7,12 @@ using AC;
 public class HeroController : MonoBehaviour
 {
     //sets player speed
-    [SerializeField] float _playerSpeed = 5f;
-    [SerializeField] float _runSpeed = 8f;
-    [SerializeField] float _slowSpeed = 2f;
+    [SerializeField] float _playerSpeed = 0.25f;
+    [SerializeField] float _runSpeed = 0.20f;
+    [SerializeField] float _slowSpeed = 0.30f;
 
+    public Animator _animator;
+    public SpriteRenderer _sprite;
     public Rigidbody2D _rb; //sets up variable for rigid body
     public Vector2 _move;//sets up the player movement
     GVar _isRunning;//defines variable from AC
@@ -34,12 +36,15 @@ public class HeroController : MonoBehaviour
     public GameObject _lookInteract;
     public GameObject _useInteract;
     public GameObject _openInteract;
+    public GameObject _InteractIndic;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        //Cursor.visible = false;
+        Cursor.visible = false;
+        _sprite = GetComponent<SpriteRenderer>();
+        _animator = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody2D>(); //gets rigid body so you dont have to type whole thing
         _rb.gravityScale = 0; //stops player from falling until set to at least 1
         _isCrouching = AC.GlobalVariables.GetVariable(14);//addresses the variable of 'var' 5 from AC
@@ -55,21 +60,25 @@ public class HeroController : MonoBehaviour
         if (collision.gameObject.tag == "talk")
         {
             _speekInteract.SetActive(true);
+            _InteractIndic.SetActive(true);
         }
         //adds look indicator above player
         if (collision.gameObject.tag == "look")
         {
             _lookInteract.SetActive(true);
+            _InteractIndic.SetActive(true);
         }
         //adds use indicator above player
         if (collision.gameObject.tag == "use")
         {
             _useInteract.SetActive(true);
+            _InteractIndic.SetActive(true);
         }
         //adds open(for doors) indicator above player
         if (collision.gameObject.tag == "open")
         {
             _openInteract.SetActive(true);
+            _InteractIndic.SetActive(true);
         }
 
         //stops player from moving while in the freeze trigger
@@ -88,6 +97,7 @@ public class HeroController : MonoBehaviour
         if (collision.gameObject.tag == "talk")
         {
             _speekInteract.SetActive(false);
+            _InteractIndic.SetActive(false);
 
             _trig1.SetActive(false);
             _trig1.SetActive(true);
@@ -114,6 +124,7 @@ public class HeroController : MonoBehaviour
         if (collision.gameObject.tag == "look")
         {
             _lookInteract.SetActive(false);
+            _InteractIndic.SetActive(false);
 
             _trig1.SetActive(false);
             _trig1.SetActive(true);
@@ -140,6 +151,7 @@ public class HeroController : MonoBehaviour
         if (collision.gameObject.tag == "use")
         {
             _useInteract.SetActive(false);
+            _InteractIndic.SetActive(false);
 
             _trig1.SetActive(false);
             _trig1.SetActive(true);
@@ -166,7 +178,32 @@ public class HeroController : MonoBehaviour
         if (collision.gameObject.tag == "open")
         {
             _openInteract.SetActive(false);
+            _InteractIndic.SetActive(false);
 
+            _trig1.SetActive(false);
+            _trig1.SetActive(true);
+            _trig2.SetActive(false);
+            _trig2.SetActive(true);
+            _trig3.SetActive(false);
+            _trig3.SetActive(true);
+            _trig4.SetActive(false);
+            _trig4.SetActive(true);
+            _trig5.SetActive(false);
+            _trig5.SetActive(true);
+            _trig6.SetActive(false);
+            _trig6.SetActive(true);
+            _trig7.SetActive(false);
+            _trig7.SetActive(true);
+            _trig8.SetActive(false);
+            _trig8.SetActive(true);
+            _trig9.SetActive(false);
+            _trig9.SetActive(true);
+            _trig10.SetActive(false);
+            _trig10.SetActive(true);
+        }
+
+        if (collision.gameObject.tag == "Dzone")
+        {
             _trig1.SetActive(false);
             _trig1.SetActive(true);
             _trig2.SetActive(false);
@@ -192,6 +229,7 @@ public class HeroController : MonoBehaviour
         //allows player to move again
         if (collision.gameObject.tag == "freeze")
         {
+            
             _freeze = false;
             Debug.Log("you have left freeze");
         }
@@ -201,12 +239,19 @@ public class HeroController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Cursor.visible = false;
         if (!_freeze)
         {
+            Cursor.visible = false;
             //checks for player movement
             _move.x = Input.GetAxisRaw("Horizontal");
             _move.y = Input.GetAxisRaw("Vertical");
+
+            _animator.SetFloat("Speed", Mathf.Abs(_move.x) + Mathf.Abs(_move.y));
+        }
+        if (_freeze)
+        {
+            _animator.SetFloat("Speed", 0f);
+            Cursor.visible = true;
         }
     }
 
@@ -216,7 +261,7 @@ public class HeroController : MonoBehaviour
     {
         if (!_freeze)
         {
-            
+
             if (Input.GetKey(KeyCode.LeftShift))
             {
                 _rb.MovePosition(_rb.position + _move * _runSpeed * Time.fixedDeltaTime);//actually changes your position for running
@@ -244,11 +289,21 @@ public class HeroController : MonoBehaviour
                 _rb.MovePosition(_rb.position + _move * _playerSpeed * Time.fixedDeltaTime);//actually changes your position
                 if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A))
                 {
+                    
                     _isRunning.BooleanValue = false;
                     _isCrouching.BooleanValue = false;
                     _isWalking.BooleanValue = true;
                     Debug.Log("you are walking");
                 }
+            }
+
+            if (Input.GetKey(KeyCode.A))
+            {
+                _sprite.flipX = true;
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                _sprite.flipX = false;
             }
         }
     }
